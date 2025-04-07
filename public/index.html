@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integración Google Authenticator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        #qr {
+            margin-top: 20px;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Google Authenticator Integration</h1>
+
+    <button id="generate">Generar Secreto</button>
+    <div id="qr"></div>
+
+    <h2>Verificar Token</h2>
+    <input type="text" id="token" placeholder="Introduce el token">
+    <button id="verify">Verificar Token</button>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('generate').addEventListener('click', async () => {
+            const response = await fetch('http://localhost:3000/api/generate-secret');
+            const data = await response.json();
+            document.getElementById('qr').innerHTML = `<img src="${data.qr}" alt="QR Code">`;
+        });
+
+        document.getElementById('verify').addEventListener('click', async () => {
+            const token = document.getElementById('token').value;
+            const response = await fetch('http://localhost:3000/api/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token })
+            });
+            const data = await response.json();
+            document.getElementById('result').innerText = data.verified ? 'Token válido' : 'Token inválido';
+        });
+    </script>
+</body>
+</html>
